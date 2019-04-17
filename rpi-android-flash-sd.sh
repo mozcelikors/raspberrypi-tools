@@ -8,7 +8,6 @@
 
 #!/bin/bash
 
-# Enter your path here 
 android_path=/media/mozcelikors/android_builds/rpi-android
 
 lsblk
@@ -27,10 +26,16 @@ echo "You entered $devpath"
 
 # Get mount point
 mountpointp1=`grep "^${devpath}1 " /proc/mounts | cut -d ' ' -f 2`
+echo "Mount point: ${mountpointp1}"
+
+if [ -z "$mountpointp1" ]; then
+      echo "SD Card is not mounted, please replug SD card to continue.."
+      exit 1;
+fi
 
 partitioncountplus1=`ls $devpath* | wc -l`
 devpathminusdev=`echo $devpath |  sed "s/\/dev\///g"`
-echo $devpathminusdev
+#echo $devpathminusdev
 devicespace=`awk '/sd[a-e]$/{printf "%s %8.2f\n", $NF, $(NF-1) / 1024 / 1024}' /proc/partitions |  sed "s/ //g" |  sed  "s/$devpathminusdev//g" | sed '/^sd/d'`
 echo "$devicespace GiB space on the drive.."
 
